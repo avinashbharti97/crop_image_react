@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom'
 import React, {useState, useCallback, useRef, useEffect} from 'react'
 import ReactCrop from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
+import './picUploadCrop.css'
 
 const pixelRatio = 4;
 
@@ -30,7 +31,7 @@ export default function PicUploadCrop() {
   
   const [photo, setPhoto] = useState();
   const [croppedPhotoUrl, setCropPhotoUrl] = useState();
-  const [crop, setCrop] = useState({ unit: "%", width: 30, aspect: 16/9 });
+  const [crop, setCrop] = useState({ unit: "%", width: 50, height: 50, x: 25, y: 25});
   const [completedCrop, setCompletedCrop] = useState(null);
   const photoRef = useRef(null);
   const previewCanvasRef = useRef(null);
@@ -117,45 +118,43 @@ export default function PicUploadCrop() {
       crop.height
     );
 
-    //return new Promise((resolve, reject)=>{
-      //canvas.toBlob(blob=>{
-        //if(!blob){
-          //console.error('canvas is empty');
-          //return;
-        //}
-        //blob.name = 'newFile.jpeg';
-        //window.URL.revokeObjectURL(this.fileUrl);
-        //this.fileUrl = window.URL.createObjectURL(blob);
-        //resolve(this.fileUrl)
-      //}, 'image/jpeg');
-    //});
-
   }, [completedCrop]);  
+  
+  const inputStyle = {
+    margin: "15px",
+  }
 
   return (
     <div>
-        <div>
-          <input type='file' id='upload_pic' onChange={handleFile} />
-        </div>
-          <ReactCrop
-            src={photo}
-            onImageLoaded={onLoad}
-            crop={crop}
-            onChange={c=>setCrop(c)}
-            onComplete={c=>setCompletedCrop(c)}
-          />
+        <label class="Button">
+          <input type='file' onChange={handleFile} />
+            Select Image
+        </label>
+        <ReactCrop
+          src={photo}
+          ruleOfThirds
+          onImageLoaded={onLoad}
+          crop={crop}
+          onChange={c=>setCrop(c)}
+          onComplete={c=>setCompletedCrop(c)}
+        />
 
-          <div>
-            <canvas
-              ref={previewCanvasRef}
-              style={{
-                width: completedCrop?.width ?? 0,
-                height: completedCrop?.height ?? 0
-              }}
-            />
+        {/* ---------Cropped Image Preview-----------*/}
+
+      {/*<div>
+        <canvas
+          ref={previewCanvasRef}
+          style={{
+            width: completedCrop?.width ?? 0,
+            height: completedCrop?.height ?? 0
+          }}
+        />
+      </div>*/}
+
+      {/* ---------Cropped Image Preview ends-----------*/}
+          <div id="uploadButton">
+            <button className="Button" onClick={()=>handleSubmit(previewCanvasRef.current, completedCrop)}>upload</button>
           </div>
-
-            <button onClick={()=>handleSubmit(previewCanvasRef.current, completedCrop)}>upload</button>
     </div>
     )
 }

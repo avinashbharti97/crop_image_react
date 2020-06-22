@@ -1,12 +1,12 @@
 import React from 'react';
 import logo from './logo.svg';
-import PicUploadCrop from './hooks/picUploadCrop';
+import ImageContainer from './hooks/uploadImagePrevContainer'
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <PicUploadCrop/>
+      <ImageContainer/>
     </div>
   );
 }

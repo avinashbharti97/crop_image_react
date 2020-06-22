@@ -1,0 +1,12 @@
+#ImageContainer{
+    width: 50%;
+    margin: 0 auto;
+}
+
+@media (min-width: 320px) and (max-width: 480px) {
+  
+    #ImageContainer{
+        width: 100%;
+        margin: 0 auto;
+    } 
+}
