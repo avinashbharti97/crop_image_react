@@ -5,9 +5,31 @@ import 'react-image-crop/dist/ReactCrop.css'
 
 const pixelRatio = 4;
 
+function getNewCanvas(canvas, newWidth, newHeight){
+  const tmpCanvas = document.createElement("canvas");
+  tmpCanvas.width = newWidth;
+  tmpCanvas.height = newHeight;
+
+  const ctx = tmpCanvas.getContext("2d");
+  ctx.drawImage(
+    canvas,
+    0,
+    0,
+    canvas.width,
+    canvas.height,
+    0,
+    0,
+    newWidth,
+    newHeight
+  );
+
+  return tmpCanvas;
+}
+
 export default function PicUploadCrop() {
   
   const [photo, setPhoto] = useState();
+  const [croppedPhotoUrl, setCropPhotoUrl] = useState();
   const [crop, setCrop] = useState({ unit: "%", width: 30, aspect: 16/9 });
   const [completedCrop, setCompletedCrop] = useState(null);
   const photoRef = useRef(null);
@@ -30,12 +52,39 @@ export default function PicUploadCrop() {
     photoRef.current = photo;
   }, []);
 
-  const handleSubmit = e =>{
-    e.preventDefault()
-    //Api post request
-    //const croppedImg = this.state.croppedImageUrl
-    //console.log(croppedmg)
-  }
+  const handleSubmit=(previewCanvas, crop) =>{
+    if (!crop || !previewCanvas){
+      return;
+    }
+    const canvas = getNewCanvas(previewCanvas, crop.width, crop.height)
+    canvas.toBlob(
+      blob=>{
+        const croppedPhotoUrl = window.URL.createObjectURL(blob);
+        setCropPhotoUrl(croppedPhotoUrl)
+        window.URL.revokeObjectURL(croppedPhotoUrl);
+      },
+      "image/jpeg",
+      1
+    )
+
+    var headers = new Headers();
+    headers.append("Authorization", "Client-ID 7e0bbcd94277dbe");
+    var formData = new FormData();
+    formData.append("image", croppedPhotoUrl)
+
+    var requestOptions = {
+      method: 'POST',
+      headers: headers,
+      body: formData,
+    }
+
+    fetch("url", requestOptions)
+      .then(response => response.text())
+      .then(result => console.log(result))
+      .catch(error => console.log('error', error))
+  };
+
+
 
   useEffect(()=>{
     if(!completedCrop || !previewCanvasRef.current || !photoRef.current){
@@ -67,6 +116,20 @@ export default function PicUploadCrop() {
       crop.width,
       crop.height
     );
+
+    //return new Promise((resolve, reject)=>{
+      //canvas.toBlob(blob=>{
+        //if(!blob){
+          //console.error('canvas is empty');
+          //return;
+        //}
+        //blob.name = 'newFile.jpeg';
+        //window.URL.revokeObjectURL(this.fileUrl);
+        //this.fileUrl = window.URL.createObjectURL(blob);
+        //resolve(this.fileUrl)
+      //}, 'image/jpeg');
+    //});
+
   }, [completedCrop]);  
 
   return (
@@ -92,7 +155,7 @@ export default function PicUploadCrop() {
             />
           </div>
 
-          <button onClick={handleSubmit}>upload</button>
+            <button onClick={()=>handleSubmit(previewCanvasRef.current, completedCrop)}>upload</button>
     </div>
     )
 }
