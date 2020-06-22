@@ -125,19 +125,26 @@ export default function PicUploadCrop() {
   }
 
   return (
-    <div>
-        <label class="Button">
+    <React.Fragment>
+      {!photo?
+        <label class="Button" id="selectButton">
           <input type='file' onChange={handleFile} />
             Select Image
-        </label>
-        <ReactCrop
-          src={photo}
-          ruleOfThirds
-          onImageLoaded={onLoad}
-          crop={crop}
-          onChange={c=>setCrop(c)}
-          onComplete={c=>setCompletedCrop(c)}
-        />
+            </label>:
+          <div>
+            <ReactCrop
+              src={photo}
+              ruleOfThirds
+              onImageLoaded={onLoad}
+              crop={crop}
+              onChange={c=>setCrop(c)}
+              onComplete={c=>setCompletedCrop(c)}
+            />
+            <div id="uploadButton">
+              <button className="Button" onClick={()=>handleSubmit(previewCanvasRef.current, completedCrop)}>upload</button>
+            </div>
+        </div>
+      }
 
         {/* ---------Cropped Image Preview-----------*/}
 
@@ -152,9 +159,6 @@ export default function PicUploadCrop() {
       </div>*/}
 
       {/* ---------Cropped Image Preview ends-----------*/}
-          <div id="uploadButton">
-            <button className="Button" onClick={()=>handleSubmit(previewCanvasRef.current, completedCrop)}>upload</button>
-          </div>
-    </div>
+    </React.Fragment>
     )
 }
