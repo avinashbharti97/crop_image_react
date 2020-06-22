@@ -7,7 +7,7 @@ const pixelRatio = 4;
 
 export default function PicUploadCrop() {
   
-  const [photo, setPhoto] = useState({ photoFile: "", photoUrl: "" });
+  const [photo, setPhoto] = useState();
   const [crop, setCrop] = useState({ unit: "%", width: 30, aspect: 16/9 });
   const [completedCrop, setCompletedCrop] = useState(null);
   const photoRef = useRef(null);
@@ -18,10 +18,7 @@ export default function PicUploadCrop() {
     const fileReader = new FileReader()
     fileReader.onloadend = () => {
       //this.setState({photoFile: file, photoUrl: fileReader.result})
-      setPhoto({
-        photoFile: file,
-        photoUrl: fileReader.result
-      })
+      setPhoto(fileReader.result)
     }
 
     if(file){
@@ -89,8 +86,8 @@ export default function PicUploadCrop() {
             <canvas
               ref={previewCanvasRef}
               style={{
-                width: completedCrop.width,
-                height: completedCrop.height
+                width: completedCrop?.width ?? 0,
+                height: completedCrop?.height ?? 0
               }}
             />
           </div>
